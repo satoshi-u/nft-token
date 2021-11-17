@@ -1,6 +1,5 @@
 # nft-custom-erc20-buy
-
-<pre>
+<br />
 
 If using the latest commit, please follow these steps to deploy and test in remix/testnet.
 
@@ -8,16 +7,22 @@ Deploy the SolToken contract first, providing an initial supply of, say 1 millio
 ```shell
 1000000000000000000000000
 ```
+<br />
+
 
 Deploy the NFTMarket contract by providing the address of SolToken, which we just deployed : 
 ```shell
 $ SolToken Address
 ```
+<br />
+
 
 Deploy the NFT contract by providing the address of NFTMarket, which we just deployed :
 ```shell
 $ NFTMarket Address
 ```
+<br />
+
 
 Now, in NFT, using seller's account,
 Invoke createToken method with, say "token1uri" :
@@ -25,6 +30,8 @@ Invoke createToken method with, say "token1uri" :
 "token1uri"
 ```
 This will store this URI against tokenId "1".
+<br />
+
 
 Now, in NFTMarket, using seller's account,
 Invoke createMarketItem method with following args {NFTAddress, tokenId(1), price(say 50 SOL)} :
@@ -42,6 +49,7 @@ Note: In msg.value, give 0.025 ether as listingFee
 25000000000000000
 ```
 This will list our item in NFT Market Place against itemId "1".
+<br />
 
 
 Now, in SolToken, using buyer's account,
@@ -53,6 +61,7 @@ $ NFTMarket Address
 50000000000000000000
 ```
 This will approve NFTMarket to transfer tokens from buyer to itself.
+<br />
 
 Now, in NFTMarket, using buyer's account,
 Invoke createMarketSale method with following args {NFTAddress, itemId(1)} :
@@ -64,16 +73,14 @@ $ NFTMarket Address
 ```
 This will transfer the itemId "1" NFT to buyer and transfer 50 SOL to seller.
 Also, it will transfer 0.025 ether listingFee from NFTMarket to the owner of contract.
+<br />
 
-
-
-
-
+<br />
+<br />
 To test locally with hardhat, pull the previous commit and :
 
 ```shell
 npx hardhat compile
 npx hardhat test
 ```
-
-<\pre>
+<br />
