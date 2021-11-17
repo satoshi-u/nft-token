@@ -1,5 +1,7 @@
 # nft-custom-erc20-buy
 
+<pre>
+
 If using the latest commit, please follow these steps to deploy and test in remix/testnet.
 
 Deploy the SolToken contract first, providing an initial supply of, say 1 million :
@@ -50,7 +52,7 @@ $ NFTMarket Address
 ```shell
 50000000000000000000
 ```
-This will approve NFTMarket to transfer tokens from buyer to itself and to seller.
+This will approve NFTMarket to transfer tokens from buyer to itself.
 
 Now, in NFTMarket, using buyer's account,
 Invoke createMarketSale method with following args {NFTAddress, itemId(1)} :
@@ -73,3 +75,5 @@ To test locally with hardhat, pull the previous commit and :
 npx hardhat compile
 npx hardhat test
 ```
+
+<\pre>
