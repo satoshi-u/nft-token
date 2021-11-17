@@ -9,9 +9,16 @@ let seller;
 before(async () => {
   accounts = await ethers.getSigners();
   seller = accounts[0];
+  const name = "Sol Token";
+  const symbol = "SOL";
+  const initSupply = (ethers.utils.parseEther("1000000")).toString(); // 1000000 sol
+
+  const SolToken = await ethers.getContractFactory("SolToken");
+  solToken = await SolToken.deploy(name, symbol, initSupply);
+  await solToken.deployed();
 
   const NFTMarket = await ethers.getContractFactory("NFTMarket");
-  nftMarket = await NFTMarket.deploy();
+  nftMarket = await NFTMarket.deploy(solToken.address);
   await nftMarket.deployed();
 
   const NFT = await ethers.getContractFactory("NFT");
