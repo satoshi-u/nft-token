@@ -12,11 +12,8 @@ before(async () => {
     owner = accounts[0];
     testAccount = accounts[1];
 
-    const name = "Sol Token";
-    const symbol = "SOL";
-
     const SolToken = await ethers.getContractFactory("SolToken");
-    solToken = await SolToken.deploy(name, symbol, initSupply);
+    solToken = await SolToken.deploy(initSupply);
     await solToken.deployed();
 })
 

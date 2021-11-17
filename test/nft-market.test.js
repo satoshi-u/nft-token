@@ -14,12 +14,10 @@ before(async () => {
   // console.log("seller: ", seller.address);
   // console.log("buyer: ", buyer.address);
 
-  const name = "Sol Token";
-  const symbol = "SOL";
   const initSupply = (ethers.utils.parseEther("1000000")).toString(); // 1000000 sol
 
   const SolToken = await ethers.getContractFactory("SolToken");
-  solToken = await SolToken.deploy(name, symbol, initSupply);
+  solToken = await SolToken.deploy(initSupply);
   await solToken.deployed();
 
   const NFTMarket = await ethers.getContractFactory("NFTMarket");

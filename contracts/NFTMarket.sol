@@ -2,55 +2,10 @@
 
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-interface ISolToken {
-    function totalSupply() external view returns (uint256);
-
-    function balanceOf(address account) external view returns (uint256);
-
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool);
-
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    function approveNFTMarketBuy(
-        address _owner,
-        address _spender,
-        uint256 _amount
-    ) external returns (bool);
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-}
-
-// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// interface ISolToken is IERC20 {
-//     function _approveNFTMarketBuy(
-//         address _owner,
-//         address _spender,
-//         uint256 _amount
-//     ) external returns (bool);
-// }
 
 // Create a Marketplace Smart contract to buy and sell NFT with your custom ERC20 token.
 // The candidate can use the standard library if needed.
@@ -134,19 +89,10 @@ contract NFTMarket is ReentrancyGuard {
             itemId,
             nftContract,
             tokenId,
-            payable(msg.sender),
-            payable(address(0)),
+            msg.sender,
+            address(0),
             price,
             false
-        );
-    }
-
-    // approve tokens to NFTMarket from buyer
-    function approveTokensBeforeBuy(uint256 _amount) public {
-        ISolToken(solTokenAddr).approveNFTMarketBuy(
-            msg.sender,
-            address(this),
-            _amount
         );
     }
 
@@ -157,25 +103,24 @@ contract NFTMarket is ReentrancyGuard {
     {
         uint256 price = idTtoMarketItem[itemId].price;
         uint256 tokenId = idTtoMarketItem[itemId].tokenId;
-        address payable buyer = payable(msg.sender);
-        address payable seller = payable(idTtoMarketItem[itemId].seller);
 
-        // first approve this NFTMarket contract for these many tokens using approveTokensBeforeBuy
-        ISolToken(solTokenAddr).transferFrom(msg.sender, address(this), price); //transfer tokens to NFTMarket
+        // first approve this NFTMarket contract for these many tokens via SolToken - via script, API, etc or in remix
+        IERC20(solTokenAddr).transferFrom(msg.sender, address(this), price); //transfer tokens to NFTMarket
         IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId); //transfer NFT to buyer
-        idTtoMarketItem[itemId].owner = buyer;
+        idTtoMarketItem[itemId].owner = payable(msg.sender);
         idTtoMarketItem[itemId].sold = true;
         _itemsSold.increment();
         emit MarketItemSold(
             itemId,
             nftContract,
             tokenId,
-            seller,
-            buyer,
+            idTtoMarketItem[itemId].seller,
+            msg.sender,
             price,
             true
         );
-        ISolToken(solTokenAddr).transfer(idTtoMarketItem[itemId].seller, price); //transfer tokens to NFTMarket
+        IERC20(solTokenAddr).transfer(idTtoMarketItem[itemId].seller, price); //transfer tokens to seller from NFTMarket
+        owner.transfer(listingPrice); // transfer listing price to owner of Market Place
     }
 
     function fetchMarketItems() public view returns (MarketItem[] memory) {
